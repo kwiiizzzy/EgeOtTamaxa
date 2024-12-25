@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проверка ответов</title>
+  <style>
+    .status {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
+    .input-row {
+      margin-bottom: 10px;
+    }
+    
+    #inputContainer {
+          position: absolute;
+          top: 200px;
+          left: 50px;
+          display: flex;
+          flex-direction: column;
+          gap: -5px;
+    }
+      </style>
+      
+      <div id="inputContainer">
+        <!-- Поля ввода -->
+      </div>
+
+</style>
+</head>
+<body>
+  <h1>Введите ответы:</h1>
+  <form id="answersForm">
+    <div id="inputContainer">
+      <!-- Поля ввода будут динамически добавлены -->
+    </div>
+    <button type="submit">Отправить</button>
+  </form>
+
+  <script>
+    const correctAnswers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]; // Правильные ответы
+    const inputContainer = document.getElementById('inputContainer');
+    const savedAnswers = JSON.parse(localStorage.getItem('userAnswers')) || Array(19).fill('');
+
+    // Функция для создания строк ввода
+    function createInputFields() {
+      for (let i = 0; i < 19; i++) {
+        const inputRow = document.createElement('div');
+        inputRow.className = 'input-row';
+
+        const status = document.createElement('span');
+        status.id = `status-${i}`;
+        status.className = 'status';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = savedAnswers[i];
+        input.dataset.index = i;
+
+        input.addEventListener('input', () => {
+          savedAnswers[i] = input.value;
+          localStorage.setItem('userAnswers', JSON.stringify(savedAnswers));
+        });
+
+        inputRow.appendChild(status);
+        inputRow.appendChild(input);
+        inputContainer.appendChild(inputRow);
+      }
+    }
+
+    // Обработка отправки формы
+    document.getElementById('answersForm').addEventListener('submit', (event) => {
+      event.preventDefault(); // Предотвращает отправку формы
+
+      const inputs = document.querySelectorAll('#inputContainer input');
+      inputs.forEach((input, index) => {
+        const status = document.getElementById(`status-${index}`);
+        const userAnswer = parseInt(input.value, 10);
+
+        if (userAnswer === correctAnswers[index]) {
+          status.textContent = 'верно';
+          status.className = 'status correct';
+        } else {
+          status.textContent = 'неверно';
+          status.className = 'status incorrect';
+        }
+      });
+    });
+
+    // Инициализация полей ввода
+    createInputFields();
+  </script>
+</body>
+</html>
